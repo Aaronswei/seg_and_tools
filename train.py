@@ -15,6 +15,9 @@ from datasets import video_dataset
 
 from utils import model_deploy
 
+import os
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
 slim = tf.contrib.slim
 prefetch_queue = slim.prefetch_queue
 flags = tf.app.flags
@@ -41,7 +44,7 @@ flags.DEFINE_integer('task', 0, 'The task ID.')
 
 # Settings for logging.
 
-flags.DEFINE_string('train_logdir', None,
+flags.DEFINE_string('train_logdir', 'datasets/davis17/exp/train',
                     'Where the checkpoint and logs are stored.')
 
 flags.DEFINE_integer('log_steps', 10,
@@ -112,7 +115,7 @@ flags.DEFINE_integer('train_max_neighbors_per_object', 1024,
 
 # Settings for fine-tuning the network.
 
-flags.DEFINE_string('tf_initial_checkpoint', None,
+flags.DEFINE_string('tf_initial_checkpoint', 'pre-trained/xception_65_coco_pretrained/x65-b2u1s2p-d48-2-3x256-sc-cr300k_init.ckpt',
                     'The initial checkpoint in tensorflow format.')
 
 flags.DEFINE_boolean('initialize_last_layer', False,
@@ -157,7 +160,8 @@ flags.DEFINE_multi_integer('first_frame_finetuning', [0],
 
 # Dataset settings.
 
-flags.DEFINE_multi_string('dataset', [], 'Name of the segmentation datasets.')
+flags.DEFINE_multi_string('dataset', 'davis_2017', 'Name of the segmentation datasets.')
+flags.DEFINE_multi_string('dataset_dir', 'datasets/davis17/tfrecord', 'Where the datasets reside.')
 
 flags.DEFINE_multi_float('dataset_sampling_probabilities', [],
                          'A list of probabilities to sample each of the '
@@ -166,7 +170,7 @@ flags.DEFINE_multi_float('dataset_sampling_probabilities', [],
 flags.DEFINE_string('train_split', 'train',
                     'Which split of the dataset to be used for training')
 
-flags.DEFINE_multi_string('dataset_dir', [], 'Where the datasets reside.')
+
 
 flags.DEFINE_multi_integer('three_frame_dataset', [0],
                            'Whether the dataset has exactly three frames per '
@@ -562,7 +566,7 @@ def _get_dataset_and_samples(config, train_crop_size, dataset_name,
   assert FLAGS.train_batch_size % config.num_clones == 0, (
       'Training batch size not divisble by number of clones (GPUs).')
 
-  clone_batch_size = FLAGS.train_batch_size / config.num_clones
+  clone_batch_size = int(FLAGS.train_batch_size / config.num_clones)
 
   if first_frame_finetuning:
     train_split = 'val'

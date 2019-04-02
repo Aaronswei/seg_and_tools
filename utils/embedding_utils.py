@@ -627,7 +627,7 @@ def get_logits_with_matching(images,
       last_softmax = tf.transpose(initial_softmax_feedback_n, [2, 0, 1])[
           ..., tf.newaxis]
     assert len(model_options.outputs_to_num_classes) == 1
-    output = model_options.outputs_to_num_classes.keys()[0]
+    output = list(model_options.outputs_to_num_classes.keys())[0]
     logits = []
     n_ref_frames = 1
     prev_frame_nn_features_n = None
@@ -830,8 +830,8 @@ def conv2d_identity_initializer(scale=1.0, mean=0, stddev=3e-2):
     if shape[1] % 2 != 1:
       raise ValueError('Expect shape[1] to be odd value.')
     weights = np.zeros(shape, dtype=np.float32)
-    center_y = shape[0] / 2
-    center_x = shape[1] / 2
+    center_y = int(shape[0] / 2)
+    center_x = int(shape[1] / 2)
     min_channel = min(shape[2], shape[3])
     for i in range(min_channel):
       weights[center_y, center_x, i, i] = scale

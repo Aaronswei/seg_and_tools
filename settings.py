@@ -48,7 +48,7 @@ flags.DEFINE_integer('divisible_by', None,'An integer that ensures the layer # c
 
 # For `xception_65`, use decoder_output_stride = 4. For `mobilenet_v2`, use
 # decoder_output_stride = None.
-flags.DEFINE_list('decoder_output_stride', None,
+flags.DEFINE_list('decoder_output_stride', [4],
                   'Comma-separated list of strings with the number specifying '
                   'output stride of low-level features at each network level.'
                   'Current semantic segmentation implementation assumes at '
